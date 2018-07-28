@@ -52,30 +52,44 @@ var updatecolours = function (theme)
     clicklight = "#0072de";
     clickdark = "#003b74";
   }
-  if (theme == 2)
+  if (theme == 4)
   {
     backcolour = "rgba(250, 250, 250, 0)";
-    document.body.style.background = "#d4d4d4";
+    document.body.style.background = "#181818";
     darksquare = "rgb(78, 115, 55)";
-    lightsquare ="rgb(160, 172, 123)";
+    lightsquare ="rgb(157, 177, 97)";
+    lightpiece = "rgb(255, 255, 255)";
+    darkpiece = "rgb(5,5,5)";
+    lastmovelight = "#757575";
+    lastmovedark = "#343434";
+    clicklight = "#ebe41f";
+    clickdark = "#ebe41f";
+  }
+  if (theme == 2)
+  {
+    backcolour = "rgba(31, 31, 31,0)";
+    document.body.style.background = "#d7d7d7";
+    darksquare = "rgb(83, 38, 37)";
+    lightsquare ="rgb(108, 108, 108)";
     lightpiece = "rgb(215,215,215)";
     darkpiece = "rgb(5,5,5)";
-    lastmovelight = "#767676";
-    lastmovedark = "#343434";
+    lastmovelight = "#9a4343";
+    lastmovedark = "#7e1b1b";
     clicklight = "#0072de";
     clickdark = "#003b74";
   }
   if (theme == 3)
   {
     backcolour = "rgba(31, 31, 31,0)";
-    darksquare = "rgb(81, 51, 30)";
-    lightsquare ="rgb(156, 113, 58)";
-    lightpiece = "rgb(215,215,215)";
+    document.body.style.background = "#1e1e1e";
+    darksquare = "rgb(64, 64, 64)";
+    lightsquare ="rgb(122, 122, 122)";
+    lightpiece = "rgb(243, 243, 243)";
     darkpiece = "rgb(5,5,5)";
-    lastmovelight = "#9a3131";
-    lastmovedark = "#7e1b1b";
-    clicklight = "#0072de";
-    clickdark = "#003b74";
+    lastmovelight = "#c65d26";
+    lastmovedark = "#cf4801";
+    clicklight = "#c65d26";
+    clickdark = "#cf4801";
   }
 }
 
@@ -526,12 +540,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var animated = rook (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var newpiece = rook (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -552,12 +566,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var animated = queen (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var newpiece = queen (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -578,12 +592,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var animated = king (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var newpiece = king (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -1165,14 +1179,11 @@ document.addEventListener ('keydown', function(event)
       console.log(lastmove2s);
       console.log("go: ", go);
     }
-  if (event.keyCode == 50)
+  if (event.keyCode == 32)
   {
-    theme = 2;
+    theme = theme % 4;
+    theme ++;
     render(boards[go], lastmove1s[go], lastmove2s [go]);
   }
-  if (event.keyCode == 49)
-  {
-    theme = 1;
-    render(boards[go], lastmove1s[go], lastmove2s [go]);
-  }i
+
 });
