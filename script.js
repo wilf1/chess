@@ -3,6 +3,11 @@ var width = window.innerWidth;
 var height = window.innerHeight;
 var lastmove1;
 var lastmove2;
+var lastmove1s = new Array (0);
+lastmove1s [0] = 64;
+var lastmove2s = new Array (0);
+lastmove2s [0] = 64;
+var boards = new Array (0);
 box.setAttribute("style", "padding-left: " + (width - 576) / 2 + "px; padding-top: " + (height - 568) / 2 + "px;" + "px; padding-right: " + (width - 568) / 2 + "px;" + "px; padding-bottom: " + (height - 568) / 2 + "px;");
 var svg = document.getElementById("gamearea");
 var rect=function(h,w,fill){
@@ -18,45 +23,62 @@ var rect=function(h,w,fill){
   return SVGObj;
 }
 var theme = 1;
-var backcolour = "rgba(31, 31, 31,0)";
+var backcolour;
 
 //var backcolour = "#595959";
 //var backcolour = "rgb(86, 68, 59)";
 //var darksquare = "rgb(62, 39, 27)";
 //default
-if (theme == 1)
+var darksquare;
+var lightsquare;
+var lightpiece;
+var darkpiece;
+var lastmovelight;
+var lastmovedark;
+var clicklight;
+var clickdark;
+var updatecolours = function (theme)
+{
+  if (theme == 1)
   {
-    var darksquare = "rgb(81, 51, 30)";
-    var lightsquare ="rgb(156, 113, 58)";
-    var lightpiece = "rgb(215,215,215)";
-    var darkpiece = "rgb(5,5,5)";
-    var lastmovelight = "#767676";
-    var lastmovedark = "#343434";
-    var clicklight = "#0072de";
-    var clickdark = "#003b74";
+    document.body.style.background = "rgb(39, 36, 36)";
+    backcolour = "rgba(31, 31, 31,0)";
+    darksquare = "rgb(81, 51, 30)";
+    lightsquare ="rgb(156, 113, 58)";
+    lightpiece = "rgb(215,215,215)";
+    darkpiece = "rgb(5,5,5)";
+    lastmovelight = "#767676";
+    lastmovedark = "#343434";
+    clicklight = "#0072de";
+    clickdark = "#003b74";
   }
-if (theme == 2)
-{
-  var darksquare = "rgb(57, 88, 38)";
-  var lightsquare ="rgb(145, 161, 98)";
-  var lightpiece = "rgb(215,215,215)";
-  var darkpiece = "rgb(5,5,5)";
-  var lastmovelight = "#767676";
-  var lastmovedark = "#343434";
-  var clicklight = "#0072de";
-  var clickdark = "#003b74";
+  if (theme == 2)
+  {
+    backcolour = "rgba(250, 250, 250, 0)";
+    document.body.style.background = "#d4d4d4";
+    darksquare = "rgb(78, 115, 55)";
+    lightsquare ="rgb(160, 172, 123)";
+    lightpiece = "rgb(215,215,215)";
+    darkpiece = "rgb(5,5,5)";
+    lastmovelight = "#767676";
+    lastmovedark = "#343434";
+    clicklight = "#0072de";
+    clickdark = "#003b74";
+  }
+  if (theme == 3)
+  {
+    backcolour = "rgba(31, 31, 31,0)";
+    darksquare = "rgb(81, 51, 30)";
+    lightsquare ="rgb(156, 113, 58)";
+    lightpiece = "rgb(215,215,215)";
+    darkpiece = "rgb(5,5,5)";
+    lastmovelight = "#9a3131";
+    lastmovedark = "#7e1b1b";
+    clicklight = "#0072de";
+    clickdark = "#003b74";
+  }
 }
-if (theme == 3)
-{
-  var darksquare = "rgb(81, 51, 30)";
-  var lightsquare ="rgb(156, 113, 58)";
-  var lightpiece = "rgb(215,215,215)";
-  var darkpiece = "rgb(5,5,5)";
-  var lastmovelight = "#9a3131";
-  var lastmovedark = "#7e1b1b";
-  var clicklight = "#0072de";
-  var clickdark = "#003b74";
-}
+
 
 //var darksquare = "rgb(75, 62, 56)";
 //var lightsquare = "rgb(159, 132, 97)";
@@ -227,6 +249,7 @@ board [59] = 9;
 board [60] = 11;
 var render = function (board, lastmove1, lastmove2)
 {
+  updatecolours(theme);
   svg.innerHTML= '';
   var back = rect (568, 568, backcolour);
   svg.appendChild(back);
@@ -271,7 +294,7 @@ var render = function (board, lastmove1, lastmove2)
     {
       if (board [y * 8 + x] == 1)
       {
-        var newpawn = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        var newpawn = pawn (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
         svg.appendChild(newpawn);
       }
       if (board [y * 8 + x] == 2)
@@ -281,7 +304,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 3)
       {
-        var newknight = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        var newknight = knight (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
         svg.appendChild(newknight);
       }
       if (board [y * 8 + x] == 4)
@@ -291,7 +314,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 5)
       {
-        var newbishop = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        var newbishop = bishop (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
         svg.appendChild(newbishop);
       }
       if (board [y * 8 + x] == 6)
@@ -301,7 +324,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 7)
       {
-        var newrook = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        var newrook = rook (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
         svg.appendChild(newrook);
       }
       if (board [y * 8 + x] == 8)
@@ -311,7 +334,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 9)
       {
-        var newqueen = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        var newqueen = queen (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
         svg.appendChild(newqueen);
       }
       if (board [y * 8 + x] == 10)
@@ -321,7 +344,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 11)
       {
-        var newking = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        var newking = king (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
         svg.appendChild(newking);
       }
       if (board [y * 8 + x] == 12)
@@ -333,11 +356,18 @@ var render = function (board, lastmove1, lastmove2)
     }
   }
 };
+var go = 0;
+boards [0] = new Array (64);
+for (var i = 0; i < 64; i++)
+  {
+    boards [boards.length - 1] [i] = board [i];
+  }
 render (board, 64, 64);
 var stopjiggling = 0;
 var continues = 0;
 animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, validmoves, lastmove1, lastmove2)
 {
+  updatecolours (theme);
   svg.innerHTML= '';
   var back = rect (568, 568, backcolour);
   svg.appendChild(back);
@@ -417,12 +447,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var animated = pawn (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var newpiece = pawn (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(newpiece);
         }
 
@@ -444,12 +474,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var animated = knight (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var newpiece = knight (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -470,12 +500,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var animated = bishop (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          var newpiece = bishop (x * 70 + 43, y * 70 + 43, piecesize, lightpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -965,6 +995,16 @@ var makemove = function (board, piece, destination)
   board [piece] = 0;
   lastmove1 = piece;
   lastmove2 = destination;
+  while (lastmove1s.length - 1 > go)
+  {
+    lastmove1s.pop();
+  }
+  while (lastmove2s.length - 1 > go)
+  {
+    lastmove2s.pop();
+  }
+  lastmove1s [lastmove1s.length] = lastmove1;
+  lastmove2s [lastmove2s.length] = lastmove2;
   return board;
 }
 var selection = 64;
@@ -1005,7 +1045,7 @@ svg.addEventListener('click', function(event)
       //   clearInterval(jiggling);
       stopjiggling = 1;
       render(board, lastmove1, lastmove2);
-      board = animatepiece(board, selection, getcoord (event.clientX, event.clientY), 1, 1, false, null);
+      animatepiece(board, selection, getcoord (event.clientX, event.clientY), 1, 1, false, null);
       turn = 1 + (turn % 2);
       xmouse = event.clientX;
       ymouse = event.clientY;
@@ -1048,10 +1088,24 @@ svg.addEventListener('click', function(event)
 var continueon = function ()
 {
   board = makemove (board, selection, getcoord (xmouse, ymouse));
-  render (board, lastmove1, lastmove2);
+  while (boards.length - 1  > go)
+    {
+      boards.pop();
+    }
+  go++;
+  boards[go] = new Array (64);
+  
+  for (var i = 0; i < 64; i++)
+    {
+      boards [go] [i] = board [i];
+    }
+  
+  console.log(boards);
+  console.log(lastmove1s);
+  console.log(lastmove2s);
+  console.log("go: ", go);
+  render (boards [go], lastmove1s[go], lastmove2s[go]);
   selection = 64;
-  console.log("turn: ", turn);
-  console.log("is in check:", isincheck(board, turn));
 };
 svg.addEventListener('mousemove', function(event){
   if ((getcoord(event.clientX, event.clientY) < 64 && board [getcoord(event.clientX, event.clientY)] > 0 && board [getcoord(event.clientX, event.clientY)] % 2 == turn % 2)|| selection < 64 && (validmoves(board, selection, turn).includes(getcoord(event.clientX, event.clientY)) || selection == getcoord(event.clientX, event.clientY)))
@@ -1067,4 +1121,58 @@ svg.addEventListener('mousemove', function(event){
 });
 svg.addEventListener('mouseout', function(event){
   document.body.style.cursor = "default";
+});
+document.addEventListener ('keydown', function(event)
+                     {
+  if (event.keyCode == 37)
+    {
+      if (go > 0)
+        {
+
+          go --;
+          for (var i = 0; i < 64; i++)
+          {
+            board [i] = boards [go] [i];
+          }
+          lastmove1 = lastmove1s [go];
+          lastmove2 = lastmove2s [go];
+          turn = 1 + (go % 2);
+          render(board, lastmove1, lastmove2);
+        }
+      console.log(boards);
+      console.log(lastmove1s);
+      console.log(lastmove2s);
+      console.log("go: ", go);
+      
+      
+    }
+  if (event.keyCode == 39)
+    {
+      if (boards.length - 1 > go)
+        {
+          go++;
+          for (var i = 0; i < 64; i++)
+            {
+              board [i] = boards [go] [i];
+            }
+          lastmove1 = lastmove1s [go];
+          lastmove2 = lastmove2s [go];
+          turn = 1 + (go % 2);
+          render(board, lastmove1, lastmove2);
+        }
+      console.log(boards);
+      console.log(lastmove1s);
+      console.log(lastmove2s);
+      console.log("go: ", go);
+    }
+  if (event.keyCode == 50)
+  {
+    theme = 2;
+    render(boards[go], lastmove1s[go], lastmove2s [go]);
+  }
+  if (event.keyCode == 49)
+  {
+    theme = 1;
+    render(boards[go], lastmove1s[go], lastmove2s [go]);
+  }i
 });
