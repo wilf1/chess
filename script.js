@@ -1,3 +1,9 @@
+var box = document.getElementById("game");
+var width = window.innerWidth;
+var height = window.innerHeight;
+var lastmove1;
+var lastmove2;
+box.setAttribute("style", "padding-left: " + (width - 576) / 2 + "px; padding-top: " + (height - 568) / 2 + "px;" + "px; padding-right: " + (width - 568) / 2 + "px;" + "px; padding-bottom: " + (height - 568) / 2 + "px;");
 var svg = document.getElementById("gamearea");
 var rect=function(h,w,fill){
   var NS="http://www.w3.org/2000/svg";
@@ -12,17 +18,35 @@ var rect=function(h,w,fill){
   return SVGObj;
 }
 
-var backcolour = "rgb(114, 114, 114)";
+var backcolour = "rgba(31, 31, 31,0)";
+
 //var backcolour = "#595959";
 //var backcolour = "rgb(86, 68, 59)";
 //var darksquare = "rgb(62, 39, 27)";
-var darksquare = "rgb(75, 62, 56)";
-//var darksquare = "rgb(60, 49, 43)";
-var lightsquare = "rgb(159, 132, 97)";
-//var lightsquare ="rgb(140, 115, 83)";
+//default
+var darksquare = "rgb(81, 51, 30)";
+var lightsquare ="rgb(156, 113, 58)";
+//var darksquare = "rgb(75, 62, 56)";
+//var lightsquare = "rgb(159, 132, 97)";
+
+//greenwhite
+//var darksquare = "rgb(50, 81, 30)";
+//var lightsquare ="rgb(136, 150, 96)";
 var lightpiece = "rgb(215,215,215)";
 var darkpiece = "rgb(5,5,5)";
 var turn = 1;
+//var lastmovelight = "#0072de";
+//var lastmovedark = "#003b74";
+//steel
+//var lastmovelight = "#748798";
+//var lastmovedark = "#31363a";
+//grey
+var lastmovelight = "#767676";
+var lastmovedark = "#343434";
+//var clicklight = "#46bc00";
+//var clickdark = "#308000";
+var clicklight = "#0072de";
+var clickdark = "#003b74";
 //var darksquare = "rgb(130, 145, 124)";
 //var lightsquare ="rgb(46, 71, 46)";
 var pawn = function (x, y, size, colour)
@@ -30,7 +54,7 @@ var pawn = function (x, y, size, colour)
   var NS="http://www.w3.org/2000/svg";
   var SVGObj= document.createElementNS(NS,"polygon");
   var xpoints = [-10, 10, 10, 5, 15, -15, -5, -10, -10];
-  var ypoints = [-25, -25, -5, -5, 25, 25, -5, -5, -25];
+  var ypoints = [-22, -22, -1, -1, 25, 25, -1, -1, -22];
   var points = "";
   for (var i = 0; i < xpoints.length;i++)
   {
@@ -67,8 +91,8 @@ var bishop = function (x, y, size, colour)
 {
   var NS="http://www.w3.org/2000/svg";
   var SVGObj= document.createElementNS(NS,"polygon");
-  var xpoints = [-14, 0, 14, 14, 5, 20, -20, -5, -14];
-  var ypoints = [-10, -25, -10, -1, -1, 25, 25, -1, -1];
+  var xpoints = [-14, 0, 4.67, 0, 4.67, 9.3, 14, 14, 5, 20, -20, -5, -14];
+  var ypoints = [-11, -25, -20.33, -15.67, -11, -15.67, -11, -1, -1, 25, 25, -1, -1];
   var points = "";
   for (var i = 0; i < xpoints.length;i++)
   {
@@ -125,7 +149,7 @@ var king = function (x, y, size, colour)
   var NS="http://www.w3.org/2000/svg";
   var SVGObj= document.createElementNS(NS,"polygon");
   var xpoints = [-20, -7, -7, 7, 7, 20, 20, 10, 20, -20, -10, -20] ;
-  var ypoints =   [-12, -12, -25, -25, -12, -12, 2, 2, 25, 25, 2, 2];
+  var ypoints =   [-14, -14, -27, -27, -14, -14, 0, 0, 25, 25, 0, 0];
   var points = "";
   for (var i = 0; i < xpoints.length;i++)
   {
@@ -146,13 +170,13 @@ var colour;
 //svg.appendChild(knightone);
 var board = new Array (64);
 for (var i = 0; i < 64; i++)
-  {
-    board [i] = 0;
-  }
+{
+  board [i] = 0;
+}
 for (var i = 0; i < 8; i++)
-  {
-    board [i + 8] = 2;
-  }
+{
+  board [i + 8] = 2;
+}
 for (var i = 0; i < 8; i++)
 {
   board [i + 48] = 1;
@@ -173,7 +197,7 @@ board [3] = 10;
 board [4] = 12;
 board [59] = 9;
 board [60] = 11;
-var render = function (board)
+var render = function (board, lastmove1, lastmove2)
 {
   svg.innerHTML= '';
   var back = rect (568, 568, backcolour);
@@ -190,7 +214,21 @@ var render = function (board)
       {
         colour = darksquare;
       }
-      var rectangle = rect (size - 8, size - 8,colour);
+      if (y * 8 + x == lastmove1 || y * 8 + x == lastmove2)
+      {
+        //colour = "#56a00a";
+        if ((x + y) % 2 == 0)
+        {
+          colour = lastmovelight;
+        }
+        else
+        {
+          colour = lastmovedark;
+          //colour = "rgb(54, 75, 52)";
+        }
+
+      }
+      var rectangle = rect (size, size,colour);
       svg.appendChild(rectangle);
       rectangle.x.baseVal.value = x * size + 8;
       rectangle.y.baseVal.value = y * size + 8;
@@ -200,77 +238,77 @@ var render = function (board)
   }
   var piecesize = 1;
   for (var x = 0; x < 8; x++)
+  {
+    for (var y = 0; y < 8; y++)
     {
-      for (var y = 0; y < 8; y++)
-        {
-          if (board [y * 8 + x] == 1)
-            {
-              var newpawn = pawn (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-              svg.appendChild(newpawn);
-            }
-          if (board [y * 8 + x] == 2)
-          {
-            var newpawn = pawn (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
-            svg.appendChild(newpawn);
-          }
-          if (board [y * 8 + x] == 3)
-          {
-            var newknight = knight (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-            svg.appendChild(newknight);
-          }
-          if (board [y * 8 + x] == 4)
-          {
-            var newknight = knight (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
-            svg.appendChild(newknight);
-          }
-          if (board [y * 8 + x] == 5)
-          {
-            var newbishop = bishop (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-            svg.appendChild(newbishop);
-          }
-          if (board [y * 8 + x] == 6)
-          {
-            var newbishop = bishop (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
-            svg.appendChild(newbishop);
-          }
-          if (board [y * 8 + x] == 7)
-          {
-            var newrook = rook (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-            svg.appendChild(newrook);
-          }
-          if (board [y * 8 + x] == 8)
-          {
-            var newrook = rook (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
-            svg.appendChild(newrook);
-          }
-          if (board [y * 8 + x] == 9)
-          {
-            var newqueen = queen (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-            svg.appendChild(newqueen);
-          }
-          if (board [y * 8 + x] == 10)
-          {
-            var newqueen = queen (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
-            svg.appendChild(newqueen);
-          }
-          if (board [y * 8 + x] == 11)
-          {
-            var newking = king (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-            svg.appendChild(newking);
-          }
-          if (board [y * 8 + x] == 12)
-          {
-            var newking = king (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
-            svg.appendChild(newking);
-          }
-          piecesize = 1;
-        }
+      if (board [y * 8 + x] == 1)
+      {
+        var newpawn = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        svg.appendChild(newpawn);
+      }
+      if (board [y * 8 + x] == 2)
+      {
+        var newpawn = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        svg.appendChild(newpawn);
+      }
+      if (board [y * 8 + x] == 3)
+      {
+        var newknight = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        svg.appendChild(newknight);
+      }
+      if (board [y * 8 + x] == 4)
+      {
+        var newknight = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        svg.appendChild(newknight);
+      }
+      if (board [y * 8 + x] == 5)
+      {
+        var newbishop = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        svg.appendChild(newbishop);
+      }
+      if (board [y * 8 + x] == 6)
+      {
+        var newbishop = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        svg.appendChild(newbishop);
+      }
+      if (board [y * 8 + x] == 7)
+      {
+        var newrook = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        svg.appendChild(newrook);
+      }
+      if (board [y * 8 + x] == 8)
+      {
+        var newrook = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        svg.appendChild(newrook);
+      }
+      if (board [y * 8 + x] == 9)
+      {
+        var newqueen = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        svg.appendChild(newqueen);
+      }
+      if (board [y * 8 + x] == 10)
+      {
+        var newqueen = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        svg.appendChild(newqueen);
+      }
+      if (board [y * 8 + x] == 11)
+      {
+        var newking = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+        svg.appendChild(newking);
+      }
+      if (board [y * 8 + x] == 12)
+      {
+        var newking = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        svg.appendChild(newking);
+      }
+      piecesize = 1;
     }
+  }
 };
-render (board);
+render (board, 64, 64);
 var stopjiggling = 0;
 var continues = 0;
-animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, validmoves)
+animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, validmoves, lastmove1, lastmove2)
 {
   svg.innerHTML= '';
   var back = rect (568, 568, backcolour);
@@ -279,7 +317,7 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
   {
     for (var y = 0; y < 8; y++)
     {
-      
+
       if ((x + y) % 2 == 0)
       {
         colour = lightsquare;
@@ -289,22 +327,36 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
         colour = darksquare;
         //colour = "rgb(54, 75, 52)";
       }
-      
+
       if (y * 8 + x == piece && dorotate)
+      {
+        //colour = "#56a00a";
+        if ((x + y) % 2 == 0)
         {
-          //colour = "#56a00a";
-          if ((x + y) % 2 == 0)
-          {
-            colour = "#0072de";
-          }
-          else
-          {
-            colour = "#003b74";
-            //colour = "rgb(54, 75, 52)";
-          }
-          
+          colour = clicklight;
         }
-      var rectangle = rect (size - 8, size - 8,colour);
+        else
+        {
+          colour = clickdark;
+          //colour = "rgb(54, 75, 52)";
+        }
+
+      }
+      if (y * 8 + x == lastmove1 || y * 8 + x == lastmove2)
+      {
+        //colour = "#56a00a";
+        if ((x + y) % 2 == 0)
+        {
+          colour = lastmovelight;
+        }
+        else
+        {
+          colour = lastmovedark;
+          //colour = "rgb(54, 75, 52)";
+        }
+
+      }
+      var rectangle = rect (size , size ,colour);
       /*if (dorotate)
       {
         if (validmoves.includes(y * 8 + x))
@@ -312,7 +364,6 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
           rectangle.setAttribute("stroke", "#0072de");
           rectangle.setAttribute("stroke-width", 4);
         }
-
       }*/
       svg.appendChild(rectangle);
       rectangle.x.baseVal.value = x * size + 8;
@@ -331,33 +382,33 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
         piecesize = oldsize;
       }
       else
-        {
-          piecesize = 1;
-        }
+      {
+        piecesize = 1;
+      }
       if (board [y * 8 + x] == 1)
       {
         if (y * 8 + x == piece)
-          {
-            var animated = pawn (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-            svg.appendChild(animated);
-          }
+        {
+          var animated = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          svg.appendChild(animated);
+        }
         else
-          {
-            var newpiece = pawn (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
-            svg.appendChild(newpiece);
-          }
-        
+        {
+          var newpiece = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
+          svg.appendChild(newpiece);
+        }
+
       }
       if (board [y * 8 + x] == 2)
       {
         if (y * 8 + x == piece)
         {
-          var animated = pawn (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var animated = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = pawn (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var newpiece = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(newpiece);
         }
       }
@@ -365,12 +416,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = knight (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var animated = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = knight (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var newpiece = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(newpiece);
         }
       }
@@ -378,12 +429,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = knight (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var animated = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = knight (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var newpiece = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(newpiece);
         }
       }
@@ -391,12 +442,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = bishop (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var animated = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = bishop (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var newpiece = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(newpiece);
         }
       }
@@ -404,12 +455,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = bishop (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var animated = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = bishop (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var newpiece = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(newpiece);
         }
       }
@@ -417,12 +468,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = rook (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var animated = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = rook (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var newpiece = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(newpiece);
         }
       }
@@ -430,12 +481,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = rook (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var animated = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = rook (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var newpiece = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(newpiece);
         }
       }
@@ -443,12 +494,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = queen (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var animated = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = queen (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var newpiece = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(newpiece);
         }
       }
@@ -456,12 +507,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = queen (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var animated = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = queen (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var newpiece = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(newpiece);
         }
       }
@@ -469,12 +520,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = king (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var animated = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = king (x * 70 + 39, y * 70 + 39, piecesize, "rgb(215, 215, 215)");
+          var newpiece = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(215, 215, 215)");
           svg.appendChild(newpiece);
         }
       }
@@ -482,73 +533,73 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = king (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var animated = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = king (x * 70 + 39, y * 70 + 39, piecesize, "rgb(5, 5, 5)");
+          var newpiece = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
           svg.appendChild(newpiece);
         }
       }
       if (validmoves != null)
+      {
+        if (board [y * 8 + x] > 0 && validmoves.includes(y * 8 + x))
         {
-          if (board [y * 8 + x] > 0 && validmoves.includes(y * 8 + x))
+          if (board [y * 8 + x] % 2 == 0)
           {
-            if (board [y * 8 + x] % 2 == 0)
-              {
-                newpiece.setAttribute("stroke", lightpiece);
-              }
-            else
-              {
-                newpiece.setAttribute("stroke", darkpiece);
-              }
-            
-            newpiece.setAttribute("stroke-width", 4);
+            newpiece.setAttribute("stroke", lightpiece);
           }
+          else
+          {
+            newpiece.setAttribute("stroke", darkpiece);
+          }
+
+          newpiece.setAttribute("stroke-width", 4);
         }
-      
+      }
+
       piecesize = 1;
     }
   }
-  
-  if (newplace != piece)
-    {
-      var targetx = ((newplace % 8) - (piece % 8)) * 70;
-      var targety = (Math.floor(newplace / 8) - Math.floor(piece / 8)) * 70;
-      var x = 0;
-      var y = 0;
 
-      
-      var move = setInterval (function(){
-        animated.setAttribute ("transform", "translate (" + x + " " + y + ")");
-        x += targetx / 10;
-        y += targety / 10;
-        if (Math.abs(x) > Math.abs (targetx) || Math.abs (y) > Math.abs (targety))
-          {
-            clearInterval(move);
-            continueon();
-          }
-      }, 5);
-      
-    }
+  if (newplace != piece)
+  {
+    var targetx = ((newplace % 8) - (piece % 8)) * 70;
+    var targety = (Math.floor(newplace / 8) - Math.floor(piece / 8)) * 70;
+    var x = 0;
+    var y = 0;
+
+
+    var move = setInterval (function(){
+      animated.setAttribute ("transform", "translate (" + x + " " + y + ")");
+      x += targetx / 5;
+      y += targety / 5;
+      if (Math.abs(x) > Math.abs (targetx) || Math.abs (y) > Math.abs (targety))
+      {
+        clearInterval(move);
+        continueon();
+      }
+    }, 10);
+
+  }
   if (newsize != piecesize)
-    {
-      var animatesize = piecesize;
-      var bob = setInterval (function(){
-        animated.setAttribute("transform", "scale("+animatesize+") translate (" + ((piece%8) * 70 + 39) * (-1 + (1 / animatesize)) + " " + (Math.floor(piece/8) * 70 + 39)*(-1 + (1 / animatesize)) + ")");
-        animatesize += 0.1
-        if (animatesize > newsize)
-        {
-          clearInterval(bob);
-        }
-      }, 5);
-      
-      //animated.setAttribute("transform", "translate(109,109)");
-    }
+  {
+    var animatesize = piecesize;
+    var bob = setInterval (function(){
+      animated.setAttribute("transform", "scale("+animatesize+") translate (" + ((piece%8) * 70 + 43) * (-1 + (1 / animatesize)) + " " + (Math.floor(piece/8) * 70 + 43)*(-1 + (1 / animatesize)) + ")");
+      animatesize += 0.1
+      if (animatesize > newsize)
+      {
+        clearInterval(bob);
+      }
+    }, 5);
+
+    //animated.setAttribute("transform", "translate(109,109)");
+  }
   if (dorotate)
-    {
-      /*var rotation = 0;
+  {
+    /*var rotation = 0;
       var stage = 0;
       var jiggle = setInterval (function(){
         animated.setAttribute("transform", "rotate(" + rotation + "," + ((piece%8) * 70 + 39) + "," + (Math.floor(piece/8) * 70 + 39) + ")");
@@ -560,7 +611,7 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
           {
             rotation +=1;
           }
-        
+
         if (rotation < -8)
           {
             stage = 1;
@@ -578,10 +629,10 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
           {
             clearInterval (jiggle);
           }
-        
+
       }, 10);*/
-      //animated.style.stroke = "rgb(53, 100, 60)";
-      /*if (board[piece] % 2 == 0)
+    //animated.style.stroke = "rgb(53, 100, 60)";
+    /*if (board[piece] % 2 == 0)
         {
           animated.style.stroke = lightpiece;
         }
@@ -589,75 +640,74 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
         {
           animated.style.stroke = darkpiece;
         }*/
-      //animated.style.stroke = darksquare;
-      
-      animated.setAttribute("stroke-width", 4);
-      var squaresize = 16;
-      for (var i = 0; i < validmoves.length; i++)
-        {
-          if (board [validmoves[i]] == 0)
-            {
-              if (board[piece]%2==1)
-              {
-                var rectangle = rect(squaresize,squaresize,lightpiece);
-              }
-              else
-              {
-                var rectangle = rect(squaresize,squaresize,darkpiece);
-              }
+    //animated.style.stroke = darksquare;
 
-              rectangle.x.baseVal.value = (validmoves[i] % 8) * 70 + 39 - (squaresize/2);
-              rectangle.y.baseVal.value = Math.floor(validmoves[i] / 8) * 70 + 39 - (squaresize / 2);
-              svg.appendChild(rectangle);
-            }
-          
+    animated.setAttribute("stroke-width", 4);
+    var squaresize = 16;
+    for (var i = 0; i < validmoves.length; i++)
+    {
+      if (board [validmoves[i]] == 0)
+      {
+        if (board[piece]%2==1)
+        {
+          var rectangle = rect(squaresize,squaresize,lightpiece);
         }
+        else
+        {
+          var rectangle = rect(squaresize,squaresize,darkpiece);
+        }
+
+        rectangle.x.baseVal.value = (validmoves[i] % 8) * 70 + 43 - (squaresize/2);
+        rectangle.y.baseVal.value = Math.floor(validmoves[i] / 8) * 70 + 43 - (squaresize / 2);
+        svg.appendChild(rectangle);
+      }
+
     }
+  }
   return board;
 };
 var getcoord = function (x, y)
 {
-  
+
   x = x - svg.getBoundingClientRect().left;
   y = y - svg.getBoundingClientRect().top;
   if (x > 568 || x < 4 || y > 568 || y < 4)
-    {
-      return 64;
-    }
-  return (Math.floor((x - 4)/70) + (8 * Math.floor((y - 4) / 70))) ;
+  {
+    return 64;
+  }
+  return (Math.floor((x - 8)/70) + (8 * Math.floor((y - 8) / 70))) ;
 };
 var isvalid = function (board, piece, destination, turn)
 {
   if (board [piece] == 0)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   if (board [piece] % 2 != turn % 2)
-    {
-      console.log(board [piece]);
-      console.log(turn);
-      return false;
-    }
+  {
+
+    return false;
+  }
   if (board[piece] % 2 == board [destination] % 2 && board [destination] > 0)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   if (board [piece] == 1)
+  {
+    if (board [destination] == 0 && destination == piece - 8)
     {
-      if (board [destination] == 0 && destination == piece - 8)
-        {
-          return true;
-        }
-      if (board [destination] == 0 && piece > 47 && destination == piece - 16 && board [piece - 8] == 0)
-        {
-          return true;
-        }
-      if (board [destination] > 0 && (destination == piece - 7 || destination == piece - 9))
-        {
-          return true;
-        }
-      return false;
+      return true;
     }
+    if (board [destination] == 0 && piece > 47 && destination == piece - 16 && board [piece - 8] == 0)
+    {
+      return true;
+    }
+    if (board [destination] > 0 && (destination == piece - 7 || destination == piece - 9))
+    {
+      return true;
+    }
+    return false;
+  }
   if (board [piece] == 2)
   {
     if (board [destination] == 0 && destination == piece + 8)
@@ -679,9 +729,9 @@ var isvalid = function (board, piece, destination, turn)
     var xchange = Math.abs((destination % 8) - (piece % 8));
     var ychange = Math.abs(Math.floor(destination / 8) - Math.floor(piece / 8));
     if ((xchange == 1 && ychange == 2)||(xchange == 2 && ychange == 1))
-      {
-        return true;
-      }
+    {
+      return true;
+    }
     return false;
   }
   if (board [piece] == 5 || board [piece] == 6)
@@ -693,12 +743,12 @@ var isvalid = function (board, piece, destination, turn)
       return false;
     }
     for (var i = 1; i < Math.abs (xchange); i++)
+    {
+      if (board [8 * (Math.floor(piece / 8)+ i * (ychange / Math.abs(ychange))    ) + (piece%8) + ((xchange/Math.abs(xchange)) * i)] > 0)
       {
-        if (board [8 * (Math.floor(piece / 8)+ i * (ychange / Math.abs(ychange))    ) + (piece%8) + ((xchange/Math.abs(xchange)) * i)] > 0)
-          {
-            return false;
-          }
+        return false;
       }
+    }
     return true;
   }
   if (board [piece] == 7 || board [piece] == 8)
@@ -710,26 +760,26 @@ var isvalid = function (board, piece, destination, turn)
       return false;
     }
     if (ychange == 0)
+    {
+      for (var i = 1; i < Math.abs (xchange); i++)
       {
-        for (var i = 1; i < Math.abs (xchange); i++)
+        if (board [piece + (i * (xchange/Math.abs(xchange)))] > 0)
         {
-          if (board [piece + (i * (xchange/Math.abs(xchange)))] > 0)
-          {
-            return false;
-          }
+          return false;
         }
       }
+    }
     else
+    {
+      for (var i = 1; i < Math.abs (ychange); i++)
       {
-        for (var i = 1; i < Math.abs (ychange); i++)
+        if (board [piece + (8 * i * (ychange/Math.abs(ychange)))] > 0)
         {
-          if (board [piece + (8 * i * (ychange/Math.abs(ychange)))] > 0)
-          {
-            return false;
-          }
+          return false;
         }
       }
-    
+    }
+
     return true;
   }
   if (board [piece] == 9 || board [piece] == 10)
@@ -777,9 +827,9 @@ var isvalid = function (board, piece, destination, turn)
     var xchange = Math.abs((destination % 8) - (piece % 8));
     var ychange = Math.abs(Math.floor(destination / 8) - Math.floor(piece / 8));
     if (xchange + ychange < 3 && xchange < 2 && ychange < 2)
-      {
-        return true;
-      }
+    {
+      return true;
+    }
 
     return false;
   }
@@ -789,18 +839,20 @@ var validmoves = function (board, selection, turn)
 {
   var finallist = new Array (0);
   for (var i = 0; i < 64; i++)
+  {
+    if (isvalid(board, selection, i , turn))
     {
-      if (isvalid(board, selection, i , turn))
-          {
-          finallist [finallist.length] = i;
-          }
+      finallist [finallist.length] = i;
     }
-    return finallist;
+  }
+  return finallist;
 }
 var makemove = function (board, piece, destination)
 {
   board [destination] = board [piece];
   board [piece] = 0;
+  lastmove1 = piece;
+  lastmove2 = destination;
   return board;
 }
 var selection = 64;
@@ -809,76 +861,75 @@ var ymouse;
 var jiggling;
 var saveselection;
 svg.addEventListener('click', function(event)
-                    {
+                     {
   if (selection == 64)
+  {
+    selection = getcoord (event.clientX, event.clientY);
+    saveselection = selection;
+    if (selection < 64 && board [selection] > 0 && board [selection] % 2 == turn % 2)
     {
-      selection = getcoord (event.clientX, event.clientY);
-      console.log("valid mvoes", validmoves(board, selection, turn));
-      saveselection = selection;
-      if (selection < 64 && board [selection] > 0 && board [selection] % 2 == turn % 2)
-        {
-            stopjiggling = 0;
-          animatepiece (board,selection,selection,1, 1, true, validmoves(board, selection, turn));
-            //jiggling = setInterval(function(){
-           // animatepiece (board,selection,selection,1, 1, true);
-          //  if (saveselection != selection)
-          //  {
-            //  clearInterval(jiggling);
-            //}
-    //      }, 500);
-          
-          
-        }
-      else
-        {
-          selection = 64;
-          stopjiggling = 1;
-        }
+      stopjiggling = 0;
+      animatepiece (board,selection,selection,1, 1, true, validmoves(board, selection, turn), lastmove1, lastmove2);
+      //jiggling = setInterval(function(){
+      // animatepiece (board,selection,selection,1, 1, true);
+      //  if (saveselection != selection)
+      //  {
+      //  clearInterval(jiggling);
+      //}
+      //      }, 500);
+
+
     }
+    else
+    {
+      selection = 64;
+      stopjiggling = 1;
+    }
+  }
   else
+  {
+    if (isvalid(board,selection,getcoord (event.clientX, event.clientY), turn))
     {
-      if (isvalid(board,selection,getcoord (event.clientX, event.clientY), turn))
-        {
-          //   clearInterval(jiggling);
-          stopjiggling = 1;
-          render(board);
-          board = animatepiece(board, selection, getcoord (event.clientX, event.clientY), 1, 1, false, null);
-          turn = 1 + (turn % 2);
-          xmouse = event.clientX;
-          ymouse = event.clientY;
-        }
-      else
-        {
-       
-          // clearInterval(jiggling);
-          selection = 64;
-          stopjiggling = 1;
-          render(board);
-        }
-      
-      
+      //   clearInterval(jiggling);
+      stopjiggling = 1;
+      render(board, lastmove1, lastmove2);
+      board = animatepiece(board, selection, getcoord (event.clientX, event.clientY), 1, 1, false, null);
+      turn = 1 + (turn % 2);
+      xmouse = event.clientX;
+      ymouse = event.clientY;
     }
-  
+    else
+    {
+
+      // clearInterval(jiggling);
+      selection = 64;
+      stopjiggling = 1;
+      render(board, lastmove1, lastmove2);
+    }
+
+
+  }
+
   //render(board, 64, 1);
-  
+
 });
 var continueon = function ()
 {
   board = makemove (board, selection, getcoord (xmouse, ymouse));
-  render (board);
+  render (board, lastmove1, lastmove2);
   selection = 64;
 };
 svg.addEventListener('mousemove', function(event){
   if ((selection == 64 && getcoord(event.clientX, event.clientY) < 64 && board [getcoord(event.clientX, event.clientY)] > 0 && board [getcoord(event.clientX, event.clientY)] % 2 == turn % 2)|| selection < 64 && (validmoves(board, selection, turn).includes(getcoord(event.clientX, event.clientY)) || selection == getcoord(event.clientX, event.clientY)))
-    {
-      document.body.style.cursor = "pointer";
-    }
+  {
+    document.body.style.cursor = "pointer";
+  }
   else
-    {
-      document.body.style.cursor = "default";
-    }
+  {
+    document.body.style.cursor = "default";
+  }
   //document.body.style.cursor = "pointer";
-  
+
 });
 svg.addEventListener('mouseout', function(event){
   document.body.style.cursor = "default";
