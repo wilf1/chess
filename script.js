@@ -17,23 +17,53 @@ var rect=function(h,w,fill){
   SVGObj.style.fill=fill;
   return SVGObj;
 }
-
+var theme = 1;
 var backcolour = "rgba(31, 31, 31,0)";
 
 //var backcolour = "#595959";
 //var backcolour = "rgb(86, 68, 59)";
 //var darksquare = "rgb(62, 39, 27)";
 //default
-var darksquare = "rgb(81, 51, 30)";
-var lightsquare ="rgb(156, 113, 58)";
+if (theme == 1)
+  {
+    var darksquare = "rgb(81, 51, 30)";
+    var lightsquare ="rgb(156, 113, 58)";
+    var lightpiece = "rgb(215,215,215)";
+    var darkpiece = "rgb(5,5,5)";
+    var lastmovelight = "#767676";
+    var lastmovedark = "#343434";
+    var clicklight = "#0072de";
+    var clickdark = "#003b74";
+  }
+if (theme == 2)
+{
+  var darksquare = "rgb(57, 88, 38)";
+  var lightsquare ="rgb(145, 161, 98)";
+  var lightpiece = "rgb(215,215,215)";
+  var darkpiece = "rgb(5,5,5)";
+  var lastmovelight = "#767676";
+  var lastmovedark = "#343434";
+  var clicklight = "#0072de";
+  var clickdark = "#003b74";
+}
+if (theme == 3)
+{
+  var darksquare = "rgb(81, 51, 30)";
+  var lightsquare ="rgb(156, 113, 58)";
+  var lightpiece = "rgb(215,215,215)";
+  var darkpiece = "rgb(5,5,5)";
+  var lastmovelight = "#9a3131";
+  var lastmovedark = "#7e1b1b";
+  var clicklight = "#0072de";
+  var clickdark = "#003b74";
+}
+
 //var darksquare = "rgb(75, 62, 56)";
 //var lightsquare = "rgb(159, 132, 97)";
 
 //greenwhite
-//var darksquare = "rgb(50, 81, 30)";
-//var lightsquare ="rgb(136, 150, 96)";
-var lightpiece = "rgb(215,215,215)";
-var darkpiece = "rgb(5,5,5)";
+//
+
 var turn = 1;
 //var lastmovelight = "#0072de";
 //var lastmovedark = "#003b74";
@@ -41,12 +71,10 @@ var turn = 1;
 //var lastmovelight = "#748798";
 //var lastmovedark = "#31363a";
 //grey
-var lastmovelight = "#767676";
-var lastmovedark = "#343434";
+
 //var clicklight = "#46bc00";
 //var clickdark = "#308000";
-var clicklight = "#0072de";
-var clickdark = "#003b74";
+
 //var darksquare = "rgb(130, 145, 124)";
 //var lightsquare ="rgb(46, 71, 46)";
 var pawn = function (x, y, size, colour)
@@ -677,7 +705,8 @@ var getcoord = function (x, y)
   }
   return (Math.floor((x - 8)/70) + (8 * Math.floor((y - 8) / 70))) ;
 };
-var isvalid = function (board, piece, destination, turn)
+
+var isvalidmove = function (board, piece, destination, turn)
 {
   if (board [piece] == 0)
   {
@@ -830,10 +859,73 @@ var isvalid = function (board, piece, destination, turn)
     {
       return true;
     }
+    if (board [piece] == 11)
+      {
+        if (piece == 60 && destination == 62 && board [61] == 0 && board [62] == 0 && board [63] == 7)
+          {
+            return true;
+          }
+        if (piece == 60 && destination == 58 && board [59] == 0 && board [58] == 0 && board [57] == 0 && board [56] == 7)
+        {
+          return true;
+        }
+      }
+    if (board [piece] == 12)
+    {
+      if (piece == 4 && destination == 6 && board [5] == 0 && board [6] == 0 && board [7] == 8)
+      {
+        return true;
+      }
+      if (piece == 4 && destination == 2 && board [1] == 0 && board [2] == 0 && board [3] == 0 && board [0] == 8)
+      {
+        return true;
+      }
+    }
 
     return false;
   }
   return true;
+}
+var isincheck = function (board, side)
+{
+  var kingposition;
+  for (var i = 0; i < 64; i++)
+    {
+      if (board [i] == side + 10)
+        {
+          kingposition = i;
+        }
+    }
+  for (var i = 0; i < 64; i ++)
+    {
+      if (board [i] > 0 && board [i] % 2 != side % 2)
+        {
+          if (isvalidmove(board, i, kingposition, (side % 2) + 1))
+            {
+              return true;
+            }
+        }
+    }
+  return false;
+}
+var isvalid = function (board, piece, destination, turn)
+{
+  if (isvalidmove(board, piece, destination, turn))
+    {
+      var testboard = new Array (64);
+      for (var i = 0; i < 64; i++)
+        {
+          testboard [i] = board [i];
+        }
+      testboard [destination] = testboard [piece];
+      testboard [piece] = 0;
+      if (isincheck(testboard, turn))
+        {
+          return false;
+        }
+      return true;
+    }
+  return false;
 }
 var validmoves = function (board, selection, turn)
 {
@@ -849,6 +941,26 @@ var validmoves = function (board, selection, turn)
 }
 var makemove = function (board, piece, destination)
 {
+  if (board [piece] == 11 && piece == 60 && destination == 62)
+  {
+    board [63] = 0;
+    board [61] = 7;
+  }
+  if (board [piece] == 11 && piece == 60 && destination == 58)
+  {
+    board [56] = 0;
+    board [59] = 7;
+  }
+  if (board [piece] == 12 && piece == 4 && destination == 6)
+  {
+    board [7] = 0;
+    board [5] = 8;
+  }
+  if (board [piece] == 12 && piece == 4 && destination == 2)
+  {
+    board [0] = 0;
+    board [3] = 8;
+  }
   board [destination] = board [piece];
   board [piece] = 0;
   lastmove1 = piece;
@@ -900,11 +1012,31 @@ svg.addEventListener('click', function(event)
     }
     else
     {
+      if (getcoord (event.clientX, event.clientY) == selection)
+        {
+          selection = 64;
+          stopjiggling = 1;
+          render(board, lastmove1, lastmove2);
+        }
+      else
+        {
+          selection = getcoord (event.clientX, event.clientY);
+          saveselection = selection;
+          if (selection < 64 && board [selection] > 0 && board [selection] % 2 == turn % 2)
+          {
+            stopjiggling = 0;
+            animatepiece (board,selection,selection,1, 1, true, validmoves(board, selection, turn), lastmove1, lastmove2);
+          }
 
+          else
+          {
+            selection = 64;
+            stopjiggling = 1;
+            render(board, lastmove1, lastmove2);
+          }
+        }
       // clearInterval(jiggling);
-      selection = 64;
-      stopjiggling = 1;
-      render(board, lastmove1, lastmove2);
+      
     }
 
 
@@ -918,9 +1050,11 @@ var continueon = function ()
   board = makemove (board, selection, getcoord (xmouse, ymouse));
   render (board, lastmove1, lastmove2);
   selection = 64;
+  console.log("turn: ", turn);
+  console.log("is in check:", isincheck(board, turn));
 };
 svg.addEventListener('mousemove', function(event){
-  if ((selection == 64 && getcoord(event.clientX, event.clientY) < 64 && board [getcoord(event.clientX, event.clientY)] > 0 && board [getcoord(event.clientX, event.clientY)] % 2 == turn % 2)|| selection < 64 && (validmoves(board, selection, turn).includes(getcoord(event.clientX, event.clientY)) || selection == getcoord(event.clientX, event.clientY)))
+  if ((getcoord(event.clientX, event.clientY) < 64 && board [getcoord(event.clientX, event.clientY)] > 0 && board [getcoord(event.clientX, event.clientY)] % 2 == turn % 2)|| selection < 64 && (validmoves(board, selection, turn).includes(getcoord(event.clientX, event.clientY)) || selection == getcoord(event.clientX, event.clientY)))
   {
     document.body.style.cursor = "pointer";
   }
