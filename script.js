@@ -1,3 +1,5 @@
+var audio = new Audio("chesssound.mp3");
+var audio2 = new Audio("chesssound2.mp3");
 var box = document.getElementById("game");
 var width = window.innerWidth;
 var height = window.innerHeight;
@@ -8,7 +10,7 @@ lastmove1s [0] = 64;
 var lastmove2s = new Array (0);
 lastmove2s [0] = 64;
 var boards = new Array (0);
-box.setAttribute("style", "padding-left: " + (width - 576) / 2 + "px; padding-top: " + (height - 568) / 2 + "px;" + "px; padding-right: " + (width - 568) / 2 + "px;" + "px; padding-bottom: " + (height - 568) / 2 + "px;");
+box.setAttribute("style", "padding-left: " + (width - 576) / 2 + "px; padding-top: " + (height - 568) / 2 + "px;" + "px; padding-right: " + (width - 568) / 2 + "px;");
 var svg = document.getElementById("gamearea");
 var rect=function(h,w,fill){
   var NS="http://www.w3.org/2000/svg";
@@ -90,6 +92,32 @@ var updatecolours = function (theme)
     lastmovedark = "#cf4801";
     clicklight = "#c65d26";
     clickdark = "#cf4801";
+  }
+  if (theme == 5)
+  {
+    backcolour = "rgba(31, 31, 31,0)";
+    document.body.style.background = "#1e1e1e";
+    darksquare = "rgb(77, 139, 203)";
+    lightsquare ="rgb(210, 211, 213)";
+    lightpiece = "rgb(75, 75, 75)";
+    darkpiece = "rgb(5,5,5)";
+    lastmovelight = "#ffe027";
+    lastmovedark = "#b69328";
+    clicklight = "#ed8ebb";
+    clickdark = "#c1387d";
+  }
+  if (theme == 6)
+  {
+    backcolour = "rgba(31, 31, 31,0)";
+    document.body.style.background = "#cbcbcb";
+    darksquare = "rgb(14, 14, 14)";
+    lightsquare ="rgb(41, 39, 99)";
+    lightpiece = "rgb(237, 237, 237)";
+    darkpiece = "rgb(103, 103, 103)";
+    lastmovelight = "#4b2fb3";
+    lastmovedark = "#1f1f1f";
+    clicklight = "#8e75e3";
+    clickdark = "#8d8d8d";
   }
 }
 
@@ -313,7 +341,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 2)
       {
-        var newpawn = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        var newpawn = pawn (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
         svg.appendChild(newpawn);
       }
       if (board [y * 8 + x] == 3)
@@ -323,7 +351,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 4)
       {
-        var newknight = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        var newknight = knight (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
         svg.appendChild(newknight);
       }
       if (board [y * 8 + x] == 5)
@@ -333,7 +361,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 6)
       {
-        var newbishop = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        var newbishop = bishop (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
         svg.appendChild(newbishop);
       }
       if (board [y * 8 + x] == 7)
@@ -343,7 +371,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 8)
       {
-        var newrook = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        var newrook = rook (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
         svg.appendChild(newrook);
       }
       if (board [y * 8 + x] == 9)
@@ -353,7 +381,7 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 10)
       {
-        var newqueen = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        var newqueen = queen (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
         svg.appendChild(newqueen);
       }
       if (board [y * 8 + x] == 11)
@@ -363,13 +391,26 @@ var render = function (board, lastmove1, lastmove2)
       }
       if (board [y * 8 + x] == 12)
       {
-        var newking = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+        var newking = king (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
         svg.appendChild(newking);
       }
       piecesize = 1;
     }
   }
+  
 };
+
+/*var controls = document.getElementById("toolbar");
+var toolbar = rect(30, 560, "white");
+toolbar.y.baseVal.value = 10;
+toolbar.x.baseVal.value = 8;
+controls.appendChild(toolbar);
+var undobutton = rect(30, 60, "black");
+undobutton.x.baseVal.value = 228;
+undobutton.y.baseVal.value = 10;
+controls.appendChild(undobutton);
+var*/ 
+
 var go = 0;
 boards [0] = new Array (64);
 for (var i = 0; i < 64; i++)
@@ -475,12 +516,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var animated = pawn (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = pawn (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var newpiece = pawn (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -501,12 +542,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var animated = knight (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = knight (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var newpiece = knight (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -527,12 +568,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var animated = bishop (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = bishop (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var newpiece = bishop (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -553,12 +594,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var animated = rook (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = rook (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var newpiece = rook (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -579,12 +620,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var animated = queen (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = queen (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var newpiece = queen (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -605,12 +646,12 @@ animatepiece = function (board, piece, newplace, oldsize, newsize, dorotate, val
       {
         if (y * 8 + x == piece)
         {
-          var animated = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var animated = king (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(animated);
         }
         else
         {
-          var newpiece = king (x * 70 + 43, y * 70 + 43, piecesize, "rgb(5, 5, 5)");
+          var newpiece = king (x * 70 + 43, y * 70 + 43, piecesize, darkpiece);
           svg.appendChild(newpiece);
         }
       }
@@ -775,8 +816,9 @@ var isvalidmove = function (board, piece, destination, turn)
     {
       return true;
     }
-    if (board [destination] > 0 && (destination == piece - 7 || destination == piece - 9))
+    if (board [destination] > 0 && ((destination == piece - 7 && piece % 8 < 7) || (destination == piece - 9 && piece % 8 > 0)))
     {
+      console.log("piece: ", piece);
       return true;
     }
     return false;
@@ -791,8 +833,8 @@ var isvalidmove = function (board, piece, destination, turn)
     {
       return true;
     }
-    if (board [destination] > 0 && (destination == piece + 7 || destination == piece + 9))
-    {
+    if (board [destination] > 0 && ((destination == piece + 7 && piece % 8 > 0) || (destination == piece + 9 && piece % 8 < 7)))
+      {
       return true;
     }
     return false;
@@ -967,6 +1009,70 @@ var isvalid = function (board, piece, destination, turn)
         {
           return false;
         }
+      if (board [piece] > 10 && (Math.abs(destination - piece) == 2 || Math.abs(destination - piece) == 3))
+        {
+          if (isincheck (board, turn))
+            {
+              return false;
+            }
+          for (var i = 0; i < 64; i++)
+          {
+            testboard [i] = board [i];
+          }
+          if (board[piece] == 11)
+            {
+              for (var i = 0; i < go; i++)
+              {
+                if (lastmove1s [i] == 60)
+                  {
+                    return false;
+                  }
+              }
+              if (destination == 62)
+                {
+                  testboard [61] = 11;
+                  if (isincheck(testboard, turn))
+                    {
+                      return false;
+                    }
+                }
+              if (destination == 58)
+              {
+                testboard [59] = 11;
+                if (isincheck(testboard, turn))
+                {
+                  return false;
+                }
+              }
+            }
+          if (board[piece] == 12)
+          {
+            for (var i = 0; i < go; i++)
+            {
+              if (lastmove1s [i] == 4)
+              {
+                return false;
+              }
+            }
+            if (destination == 6)
+            {
+              testboard [5] = 12;
+              if (isincheck(testboard, turn))
+              {
+                return false;
+              }
+            }
+            if (destination == 2)
+            {
+              testboard [3] = 12;
+              if (isincheck(testboard, turn))
+              {
+                return false;
+              }
+            }
+          }
+          
+        }
       return true;
     }
   return false;
@@ -983,8 +1089,15 @@ var validmoves = function (board, selection, turn)
   }
   return finallist;
 }
+/*var ispromoting = false;
+var promote = function (board, destination, turn)
+{
+  var menu = rect(200,200, "white");
+  svg.appendChild(menu);
+}*/
 var makemove = function (board, piece, destination)
 {
+  //audio.play();
   if (board [piece] == 11 && piece == 60 && destination == 62)
   {
     board [63] = 0;
@@ -1007,6 +1120,16 @@ var makemove = function (board, piece, destination)
   }
   board [destination] = board [piece];
   board [piece] = 0;
+  if (board [destination] == 1 && destination < 8)
+    {
+      //promote(board, destination, 1 + (1 + board[destination] % 2));
+      board [destination] = 9;
+    }
+  if (board [destination] == 2 && destination > 55)
+  {
+    //promote(board, destination, 1 + (1 + board[destination] % 2));
+    board [destination] = 10;
+  }
   lastmove1 = piece;
   lastmove2 = destination;
   while (lastmove1s.length - 1 > go)
@@ -1113,11 +1236,23 @@ var continueon = function ()
     {
       boards [go] [i] = board [i];
     }
-  
-  console.log(boards);
+  var movecount = 0;
+  for (var i = 0; i < 64; i++)
+    {
+      if (board [i] % 2 == turn % 2)
+        {
+          movecount += validmoves(board, i, turn).length;
+        }
+    }
+ // console.log("moves: ", movecount);
+  if (movecount == 0 && isincheck(board, turn))
+    {
+      console.log("checkmate!")
+    }
+ /* console.log(boards);
   console.log(lastmove1s);
   console.log(lastmove2s);
-  console.log("go: ", go);
+  console.log("go: ", go);*/
   render (boards [go], lastmove1s[go], lastmove2s[go]);
   selection = 64;
 };
@@ -1181,7 +1316,7 @@ document.addEventListener ('keydown', function(event)
     }
   if (event.keyCode == 32)
   {
-    theme = theme % 4;
+    theme = theme % 6;
     theme ++;
     render(boards[go], lastmove1s[go], lastmove2s [go]);
   }
