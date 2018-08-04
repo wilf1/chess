@@ -10,7 +10,7 @@ lastmove1s [0] = 64;
 var lastmove2s = new Array (0);
 lastmove2s [0] = 64;
 var boards = new Array (0);
-box.setAttribute("style", "padding-left: " + (width - 576) / 2 + "px; padding-top: " + (height - 568) / 2 + "px;" + "px; padding-right: " + (width - 568) / 2 + "px;");
+box.setAttribute("style", "padding-left: " + Math.floor((width - 576) / 2) + "px; padding-top: " + Math.floor((height - 568) / 2) + "px;" + "px; padding-right: " + (width - 568) / 2 + "px;");
 var svg = document.getElementById("gamearea");
 var rect=function(h,w,fill){
   var NS="http://www.w3.org/2000/svg";
